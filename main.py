@@ -47,11 +47,19 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 
-@app.post("/customers/{customer_id}/items/", response_model=schemas.Item)
-def create_item_for_user(
-    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
-):
-    return crud.create_customer_item(db=db, item=item, customer_id=customer_id)
+@app.put("/customers/{customer_id}")
+async def update_customer(customer_id: int, item: schemas.CustomerCreate, db: Session = Depends(get_db)):
+    db_user = crud.get_customer(db, customer_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    db_user = crud.update_customer(db, customer_id, item)
+    return db_user
+
+
+@app.delete("/customers/{customer_id}")
+async def delete_customer(customer_id: int, db: Session = Depends(get_db)):
+    return crud.delete_customer(db, customer_id)
+
 
 
 @app.get("/items/", response_model=List[schemas.Item])

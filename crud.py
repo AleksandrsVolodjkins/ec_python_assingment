@@ -4,7 +4,7 @@ import models, schemas
 
 
 def get_customer(db: Session, customer_id: int):
-    return db.query(models.Customer).filter(models.Customer.id == customer_id).first()
+    return db.query(models.Customer).filter(models.Customer.customer_id == customer_id).first()
 
 
 def get_full_name(db: Session, full_name: str):
@@ -33,6 +33,24 @@ def create_customer_item(db: Session, item: schemas.ItemCreate, customer_id: int
     db.commit()
     db.refresh(db_item)
     return db_item
+
+def update_customer(db: Session, customer_id: int,  customer: schemas.CustomerCreate):
+    db_update = db.query(models.Customer).filter(models.Customer.customer_id == customer_id).first()
+    db_update.full_name = customer.full_name
+    db.commit()
+    db.refresh(db_update)
+    return db_update
+
+
+def delete_customer(db: Session, customer_id: int):
+    db_customer = db.query(models.Customer).filter(models.Customer.customer_id == customer_id).first()
+    if db_customer:
+        db.delete(db_customer)
+        db.commit()
+        return {"message": f"Customer with ID {customer_id} deleted successfully."}
+    else:
+        return {"error": f"Customer with ID {customer_id} not found."}
+
 
 def get_details(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Details).order_by("purchase_date").offset(skip).limit(limit).all()
