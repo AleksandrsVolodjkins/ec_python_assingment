@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 
 import models, schemas
 
+from datetime import datetime
+
 
 def get_customer(db: Session, customer_id: int):
     return db.query(models.Customer).filter(models.Customer.customer_id == customer_id).first()
@@ -27,8 +29,8 @@ def get_items(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Item).order_by("item_id").offset(skip).limit(limit).all()
 
 
-def create_customer_item(db: Session, item: schemas.ItemCreate, customer_id: int):
-    db_item = models.Item(**item.dict(), customer_id=customer_id)
+def create_item(db: Session, item: schemas.ItemCreate):
+    db_item = models.Item(item_name=item.item_name)
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
@@ -54,3 +56,10 @@ def delete_customer(db: Session, customer_id: int):
 
 def get_details(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Details).order_by("purchase_date").offset(skip).limit(limit).all()
+
+def create_detail(db: Session, detail: schemas.DetailsCreate):
+    db_item = models.Details(customer_id=detail.customer_id, item_id=detail.item_id, price=detail.price, purchase_date=detail.purchase_date)
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item

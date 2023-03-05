@@ -5,7 +5,6 @@ from pydantic import BaseModel
 
 class ItemBase(BaseModel):
     item_name: str
-    description: Union[str, None] = None
 
 
 class ItemCreate(ItemBase):
@@ -13,7 +12,6 @@ class ItemCreate(ItemBase):
 
 
 class Item(ItemBase):
-    id: int
     item_id: int
 
     class Config:
@@ -37,8 +35,10 @@ class Customer(CustomerBase):
 
 
 class DetailsBase(BaseModel):
-    title: str
-    description: Union[str, None] = None
+    customer_id: int
+    item_id: int
+    purchase_date: str
+    price: float
 
 
 class DetailsCreate(DetailsBase):
@@ -46,7 +46,6 @@ class DetailsCreate(DetailsBase):
 
 
 class Details(DetailsBase):
-    id: int
     detail_id: int
 
     class Config:
